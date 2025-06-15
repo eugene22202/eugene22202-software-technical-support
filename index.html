@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./style/reset.css">
+    <link rel="stylesheet" href="./style/style.css">
+    <link rel="stylesheet" href="./style/media.css">
+    <title>Kalorium</title>
+</head>
+<body>
+    <header class="header">
+        <div class="container header__container">
+            <h1 class="logo">Kalorium</h1>
+
+            <nav class="header__nav">
+                <ul>
+                    <li><a href="#calculator">Калькулятор</a></li>
+                    <li><a href="#razion">Раціон</a></li>
+                    <li><a href="#how">Як це працює?</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main class="main ">
+        <section class="welcome">
+            <div class="container">
+                <h2 class="welcome__heading">
+                    Роби<br> 
+                    правильний<br>
+                    вибір</h2>
+
+                <div class="welcome__iconce">
+                    <img class="welcome__iconce__img" src="./img/first.png" alt="#">
+                    <img class="welcome__iconce__img" src="./img/second.png" alt="#">
+                    <img class="welcome__iconce__img" src="./img/three.png" alt="#">
+                </div>
+            </div>
+        </section>
+
+        <section class="sum" id="calculator">
+            <div class="container">
+                <form class="form__calculator">
+                    <fieldset class="form__calculator__items">
+                        <legend class="form__calculator__legend">ГОЛОВНА ЦІЛЬ?</legend>
+                            <select class="form__calculator__select" id="goal">
+                                <option value="stay">Тримати форму</option>
+                                <option value="gain">Набрати вагу</option>
+                                <option value="lose">Скинути вагу</option>
+                            </select>
+
+                            <select class="form__calculator__select" id="activity">
+                                <option value="1.38">Низька активність</option>
+                                <option value="1.75">Середня активність</option>
+                                <option value="2.2">Висока активність</option>
+                            </select>
+                    </fieldset>
+                        
+                    <fieldset class="form__calculator__items">
+                        <legend class="form__calculator__legend">ОСНОВНІ ПАРАМЕТРИ</legend>
+                            <input class="form__calculator__input_forparameters" type="number" id="height" placeholder="РІСТ" maxlength="3">
+                            <input class="form__calculator__input_forparameters" type="number" id="weight" placeholder="ВАГА" maxlength="3">
+                            <input class="form__calculator__input_forparameters" type="number" id="age" placeholder="ВІК" maxlength="3">
+                    </fieldset>
+                        
+                    <fieldset class="form__calculator__items">
+                        <input class="form__calculator__input_bytton" type="button" id="calculate" value="START">
+                    </fieldset>
+                </form>
+            </div>
+        </section>
+
+        <section class="razion" id="razion">
+            <div class="container">
+                <div class="about">
+                    <h3>Розрахуй раціон так, щоб тобі було зручно :)</h3>
+                </div>
+
+                <fieldset class="razion__calculator__items">
+                    <legend class="razion__calculator__legend">ОСНОВНІ ПАРАМЕТРИ</legend>
+                        <input class="razion__calculator__input_forparameters" type="number" id="calories" placeholder="Норма КБЖВ на день?" min="1000" max="10000">
+                        <input class="razion__calculator__input_forparameters" type="number" id="days" placeholder="На яку кількість днів? (1-7)" min="1" max="7">
+                        <input class="razion__calculator__input_forparameters" type="number" id="meals" placeholder="Яка кількість прицомів їжі? (1-6)" min="1" max="6">
+                </fieldset>
+                        
+                <fieldset class="razion__calculator__items razion__calculator__items_button">
+                    <input class="razion__calculator__input_bytton" type="button" id="start" value="START">
+                </fieldset>
+            </div>
+        </section>
+
+        <section class="how" id="how">
+            <div class="container">
+                <div class="how__info">
+                    <div class="how__info__items">
+                        <h4>Головне:</h4>
+                        <p>
+                        Якщо ви перейшли в цей розділ, то хочете дізнатися більш детальну інформацію про те, як це працює. 
+                        Основне завдання для вас — вирішити, чого ви бажаєте, далі крок за кроком заповнювати розумні форми своїми даними. 
+                        Усе розроблено так, щоб у вас не виникало труднощів із розумінням інтерфейсу. Отже, поставте собі питання та дайте відповідь самому собі: 
+                        чого ви зараз бажаєте? Підтримувати форму тіла, зменшити вагу чи набрати вагу? :)</p>
+                    </div> 
+                    <div class="how__info__items">
+                        <h4>Розпочнемо?</h4>
+                        <p>Якщо ви відповіли на головне питання, то залишилося лише скористатися двома формами на цьому сайті. 
+                        Перша знаходиться в розділі "Калькулятор". Коли ви побачите цю форму, то вона зустріне вас головним питанням. 
+                        Щоб далі вдалося точно розрахувати добову норму калорій для вас, потрібно вибрати 1 із 3 запропонованих відповідей у перших двох рядках. 
+                        Після цого вам потрібно ввести свої актуальні параметри тіла в три поля: ріст, вага, вік. Що далі? 
+                        А далі залишається тільки натиснути кнопку START та запам’ятати свій результат :)</p>
+                    </div> 
+                    <div class="how__info__items">
+                        <h4>Як розібратися в раціоні...</h4>
+                        <p>Дуже просто! У вас є результат добової норми калорій — це основний параметр, основний елемент зміни вашої форми. 
+                        Цифра, яка у вас вийшла в розділі "Калькулятор", повністю підходить під вашу ціль: розумна форма вже все розрахувала. 
+                        Щоб далі вам було зручно дотримуватися правильного харчування, у розділі "Раціон" можна підібрати їжу саме для вас. Вас знову зустріне форма, 
+                        де потрібно відповісти на три питання та натиснути START. Перед вами з’явиться список страв, які повністю покривають вашу добову норму калорій. 
+                        Звичайно, смаки в їжі у кожної людини індивідуальні. 
+                        Ви можете скористатися вже готовим раціоном або запам’ятати його головну ідею та втілити її в життя — але вже зі своїми стравами :) </p>
+                    </div> 
+                </div>
+            </div>
+        </section>
+
+        <!-- Модальное окно для калькулятора -->
+        <div id="result-overlay" class="result-overlay" style="display: none;">
+            <div class="result-content">  
+                <!-- Кнопка закрытия -->
+                <span id="close-result" class="close-result">&times;</span> 
+                <h3 class="modalnoe_h3">Ваш результат:</h3>
+                <!-- Место для вывода результата -->
+                <p id="result-value"></p> 
+                <!-- Кнопка очистки данных -->
+                <button id="clear-data" class="clear-data-button">Очистити дані</button> 
+            </div>
+        </div>
+
+        <!-- Модальное окно для результатов -->
+        <div id="meal-modal" class="meal-modal">
+            <div class="meal-modal-content">
+                <span id="close-result-two" class="close-result">&times;</span> 
+                <h3 class="razion_zagolovok">Ваш персональний раціон:</h3>
+                <div id="meal-plan-result"></div>
+                <div class="meal-modal-buttons">
+                    <button id="regenerate-btn">>Згенерувати знову<</button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer__buttons">
+                <button class="footer__button"><a href="#!">Win</a></button>
+                <button class="footer__button"><a href="#!">Mac</a></button>
+                <button class="footer__button"><a href="#!">And</a></button>
+                <button class="footer__button"><a href="#!">Ios</a></button>
+            </div>
+        </div>
+    </footer>
+    
+    <script src="script.js"></script>
+    <script src="./js/food_list.js"></script>
+</body>
+</html>
