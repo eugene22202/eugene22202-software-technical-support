@@ -23,7 +23,11 @@ document.getElementById('age').addEventListener('input', function() {
  * Виконує валідацію даних, розрахунок калорій в залежності від мети,
  * та зберігає результат у localStorage.
  */
+
+console.log("Програма запущена — калькулятор готовий до роботи.");
 document.getElementById('calculate').addEventListener('click', function() {
+    console.log("Натиснута кнопка 'START'.");
+
     const goal = document.getElementById('goal').value; // Получаем выбранную цель
     const activity = parseFloat(document.getElementById('activity').value); // Получаем уровень активности
     const height = parseFloat(document.getElementById('height').value); // Получаем рост
@@ -32,10 +36,12 @@ document.getElementById('calculate').addEventListener('click', function() {
 
     // Валидация данных
     if (isNaN(height) || height < 50 || height > 250) {
+        console.warn("Некоректне значення height:", height);
         alert("Будь ласка, введіть коректний ріст (від 50 до 250 см).");
         return;
     }
     if (isNaN(weight) || weight < 30 || weight > 300) {
+        console.warn("Некоректне значення weight:", weight);
         alert("Будь ласка, введіть коректну вагу (від 30 до 300 кг).");
         return;
     }
