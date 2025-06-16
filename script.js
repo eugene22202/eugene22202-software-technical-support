@@ -1,25 +1,25 @@
 // ----------CALCULATOR----------
 
 // Ограничение ввода до 3 символов в полях роста, веса и возраста
-document.getElementById('height').addEventListener('input', function() {
+document.getElementById("height").addEventListener("input", function() {
     if (this.value.length > 3) this.value = this.value.slice(0, 3); // Ограничиваем ввод до 3 символов
 });
 
-document.getElementById('weight').addEventListener('input', function() {
+document.getElementById("weight").addEventListener("input", function() {
     if (this.value.length > 3) this.value = this.value.slice(0, 3); // Ограничиваем ввод до 3 символов
 });
 
-document.getElementById('age').addEventListener('input', function() {
+document.getElementById("age").addEventListener("input", function() {
     if (this.value.length > 3) this.value = this.value.slice(0, 3); // Ограничиваем ввод до 3 символов
 });
 
 // Обработка кнопки "START" в калькуляторе
-document.getElementById('calculate').addEventListener('click', function() {
-    const goal = document.getElementById('goal').value; // Получаем выбранную цель
-    const activity = parseFloat(document.getElementById('activity').value); // Получаем уровень активности
-    const height = parseFloat(document.getElementById('height').value); // Получаем рост
-    const weight = parseFloat(document.getElementById('weight').value); // Получаем вес
-    const age = parseFloat(document.getElementById('age').value); // Получаем возраст
+document.getElementById("calculate").addEventListener("click", function() {
+    const goal = document.getElementById("goal").value; // Получаем выбранную цель
+    const activity = parseFloat(document.getElementById("activity").value); // Получаем уровень активности
+    const height = parseFloat(document.getElementById("height").value); // Получаем рост
+    const weight = parseFloat(document.getElementById("weight").value); // Получаем вес
+    const age = parseFloat(document.getElementById("age").value); // Получаем возраст
 
     // Валидация данных
     if (isNaN(height) || height < 50 || height > 250) {
@@ -39,11 +39,11 @@ document.getElementById('calculate').addEventListener('click', function() {
     const B = (weight * 10 + height * 6.25 - (age * 5 + 5)) * activity;
 
     let C;
-    if (goal === 'stay') {
+    if (goal === "stay") {
         C = B; // Остаться в весе
-    } else if (goal === 'gain') {
+    } else if (goal === "gain") {
         C = B * 1.03; // Набрать вес (+3%)
-    } else if (goal === 'lose') {
+    } else if (goal === "lose") {
         C = B * 0.7; // Сбросить вес (-30%)
     }
 
@@ -56,7 +56,7 @@ document.getElementById('calculate').addEventListener('click', function() {
         age: age,
         result: C.toFixed(2) // Округляем результат до 2 знаков после запятой
     };
-    localStorage.setItem('userData', JSON.stringify(userData));
+    localStorage.setItem("userData", JSON.stringify(userData));
 
     // Показываем результат
     showResult(C.toFixed(2));
@@ -64,61 +64,61 @@ document.getElementById('calculate').addEventListener('click', function() {
 
 // Функция для отображения результата
 function showResult(result) {
-    const resultElement = document.getElementById('result-value');
+    const resultElement = document.getElementById("result-value");
     resultElement.textContent = `${result} ккал`; // Выводим результат
 
-    const overlay = document.getElementById('result-overlay');
-    overlay.style.display = 'flex'; // Показываем оверлей
-    overlay.style.animation = 'fadeIn 0.3s ease-in-out'; // Анимация появления
+    const overlay = document.getElementById("result-overlay");
+    overlay.style.display = "flex"; // Показываем оверлей
+    overlay.style.animation = "fadeIn 0.3s ease-in-out"; // Анимация появления
 }
 
 // Закрываем блок с результатом
-document.getElementById('close-result').addEventListener('click', function() {
-    const overlay = document.getElementById('result-overlay');
-    overlay.style.animation = 'fadeOut 0.3s ease-in-out'; // Анимация исчезновения
+document.getElementById("close-result").addEventListener("click", function() {
+    const overlay = document.getElementById("result-overlay");
+    overlay.style.animation = "fadeOut 0.3s ease-in-out"; // Анимация исчезновения
 
     // Скрываем оверлей после завершения анимации
     setTimeout(() => {
-        overlay.style.display = 'none';
+        overlay.style.display = "none";
     }, 300); // 300ms — длительность анимации
 });
 
 // Очистка данных из localStorage и формы
-document.getElementById('clear-data').addEventListener('click', function() {
-    localStorage.removeItem('userData'); // Удаляем данные из localStorage
+document.getElementById("clear-data").addEventListener("click", function() {
+    localStorage.removeItem("userData"); // Удаляем данные из localStorage
 
     // Очищаем форму
-    document.getElementById('goal').value = 'stay';
-    document.getElementById('activity').value = '1.38';
-    document.getElementById('height').value = '';
-    document.getElementById('weight').value = '';
-    document.getElementById('age').value = '';
+    document.getElementById("goal").value = "stay";
+    document.getElementById("activity").value = "1.38";
+    document.getElementById("height").value = "";
+    document.getElementById("weight").value = "";
+    document.getElementById("age").value = "";
 
     // Скрываем блок с результатом
-    const overlay = document.getElementById('result-overlay');
-    overlay.style.display = 'none';
+    const overlay = document.getElementById("result-overlay");
+    overlay.style.display = "none";
 });
 
 // Загрузка сохраненных данных при загрузке страницы
-document.addEventListener('DOMContentLoaded', function() {
-    const savedData = localStorage.getItem('userData');
+document.addEventListener("DOMContentLoaded", function() {
+    const savedData = localStorage.getItem("userData");
     if (savedData) {
         const userData = JSON.parse(savedData);
 
         // Заполняем форму сохраненными данными
-        document.getElementById('goal').value = userData.goal;
-        document.getElementById('activity').value = userData.activity;
-        document.getElementById('height').value = userData.height;
-        document.getElementById('weight').value = userData.weight;
-        document.getElementById('age').value = userData.age;
+        document.getElementById("goal").value = userData.goal;
+        document.getElementById("activity").value = userData.activity;
+        document.getElementById("height").value = userData.height;
+        document.getElementById("weight").value = userData.weight;
+        document.getElementById("age").value = userData.age;
 
         // Показываем результат
-        const resultElement = document.getElementById('result-value');
+        const resultElement = document.getElementById("result-value");
         resultElement.textContent = `${userData.result} ккал`;
 
         // Показываем блок с результатом
-        const overlay = document.getElementById('result-overlay');
-        overlay.style.display = 'flex';
+        const overlay = document.getElementById("result-overlay");
+        overlay.style.display = "flex";
     }
 });
 
@@ -128,19 +128,19 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // ----------RAZION----------
 
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener("DOMContentLoaded", function() {
     const modal = document.getElementById("meal-modal");
     const calculateBtn = document.getElementById("start");
     const regenerateBtn = document.getElementById("regenerate-btn");
     // const closeBtn = document.getElementById("close-modal-btn");
     // const closeModalBtn = document.querySelector(".meal-modal-close");
 
-    document.getElementById('close-result-two').addEventListener('click', function() {
-    const overlay = document.getElementById('meal-modal');
-    overlay.style.animation = 'fadeOut 0.3s ease-in-out'; // Анимация исчезновения
+    document.getElementById("close-result-two").addEventListener("click", function() {
+    const overlay = document.getElementById("meal-modal");
+    overlay.style.animation = "fadeOut 0.3s ease-in-out"; // Анимация исчезновения
     // Скрываем оверлей после завершения анимации
     setTimeout(() => {
-        overlay.style.display = 'none';
+        overlay.style.display = "none";
     }, 300); // 300ms — длительность анимации
     });
     
@@ -196,10 +196,10 @@ document.addEventListener('DOMContentLoaded', function() {
                     const addition = getRandomAddition();
                     
                     const mealComponents = [
-                        calculateComponent(mainCourse, mealCalories * 0.50, 'main'),
-                        calculateComponent(side, mealCalories * 0.30, 'side'),
-                        calculateComponent(vegetable, mealCalories * 0.15, 'vegetable'),
-                        calculateComponent(addition, mealCalories * 0.05, 'addition')
+                        calculateComponent(mainCourse, mealCalories * 0.50, "main"),
+                        calculateComponent(side, mealCalories * 0.30, "side"),
+                        calculateComponent(vegetable, mealCalories * 0.15, "vegetable"),
+                        calculateComponent(addition, mealCalories * 0.05, "addition")
                     ];
                     
                     // Корректировка веса
@@ -258,7 +258,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const weight = Math.round((targetCalories * 100) / item.caloriesPer100g);
         return {
             name: item.name,
-            type: type === 'main' ? (item.type === 'fish' ? 'fish' : 'meat') : type,
+            type: type === "main" ? (item.type === "fish" ? "fish" : "meat") : type,
             weight: weight,
             calories: Math.round((weight * item.caloriesPer100g) / 100),
             proteinPer100g: item.proteinPer100g,
@@ -335,7 +335,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function displayMealPlan() {
-        let html = '';
+        let html = "";
         const totalTargetCalories = parseInt(document.getElementById("calories").value) * currentPlan.length;
         const totalActualCalories = currentPlan.reduce((sum, day) => sum + day.totalCalories, 0);
         const totalDifference = totalActualCalories - totalTargetCalories;
@@ -359,12 +359,12 @@ document.addEventListener('DOMContentLoaded', function() {
                                 ${comp.calories} ккал 
                                 (Б:${comp.protein}г Ж:${comp.fat}г В:${comp.carbs}г)
                             </div>
-                        `).join('')}
+                        `).join("")}
                     </div>
                 `;
             });
             
-            html += `</div>`;
+            html += "</div>";
         });
         
         // Общая статистика
@@ -380,12 +380,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function getComponentName(type) {
         const names = {
-            'meat': 'М\'ясо',
-            'poultry': 'Пташина',
-            'fish': 'Риба',
-            'side': 'Гарнір',
-            'vegetable': 'Овочі',
-            'addition': 'Добавка'
+            "meat": "М'ясо",
+            "poultry": "Пташина",
+            "fish": "Риба",
+            "side": "Гарнір",
+            "vegetable": "Овочі",
+            "addition": "Добавка"
         };
         return names[type] || type;
     }

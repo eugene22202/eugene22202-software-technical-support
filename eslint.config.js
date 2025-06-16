@@ -1,16 +1,16 @@
 // eslint.config.js
 export default [
     {
-        files: ['**/*.js'],
+        files: ["**/*.js"],
         languageOptions: {
-            ecmaVersion: 'latest',
-            sourceType: 'module',
+            ecmaVersion: "latest",
+            sourceType: "module",
         },
         rules: {
-            semi: ['error', 'always'],
-            quotes: ['error', 'double'],
-            'no-unused-vars': 'warn',
-            'no-console': 'off',
+            semi: ["error", "always"],
+            quotes: ["error", "double"],
+            "no-unused-vars": "warn",
+            "no-console": "off",
         },
     },
 ];
