@@ -1,25 +1,34 @@
 // ----------CALCULATOR----------
 
 // Ограничение ввода до 3 символов в полях роста, веса и возраста
-document.getElementById("height").addEventListener("input", function() {
+/**
+ * Обмежує введення у полі 'height' до 3 символів.
+ * Додає обробник події input, який обрізає введене значення.
+ */
+document.getElementById('height').addEventListener('input', function() {
     if (this.value.length > 3) this.value = this.value.slice(0, 3); // Ограничиваем ввод до 3 символов
 });
 
-document.getElementById("weight").addEventListener("input", function() {
+document.getElementById('weight').addEventListener('input', function() {
     if (this.value.length > 3) this.value = this.value.slice(0, 3); // Ограничиваем ввод до 3 символов
 });
 
-document.getElementById("age").addEventListener("input", function() {
+document.getElementById('age').addEventListener('input', function() {
     if (this.value.length > 3) this.value = this.value.slice(0, 3); // Ограничиваем ввод до 3 символов
 });
 
 // Обработка кнопки "START" в калькуляторе
-document.getElementById("calculate").addEventListener("click", function() {
-    const goal = document.getElementById("goal").value; // Получаем выбранную цель
-    const activity = parseFloat(document.getElementById("activity").value); // Получаем уровень активности
-    const height = parseFloat(document.getElementById("height").value); // Получаем рост
-    const weight = parseFloat(document.getElementById("weight").value); // Получаем вес
-    const age = parseFloat(document.getElementById("age").value); // Получаем возраст
+/**
+ * Основний обробник натискання кнопки 'START'.
+ * Виконує валідацію даних, розрахунок калорій в залежності від мети,
+ * та зберігає результат у localStorage.
+ */
+document.getElementById('calculate').addEventListener('click', function() {
+    const goal = document.getElementById('goal').value; // Получаем выбранную цель
+    const activity = parseFloat(document.getElementById('activity').value); // Получаем уровень активности
+    const height = parseFloat(document.getElementById('height').value); // Получаем рост
+    const weight = parseFloat(document.getElementById('weight').value); // Получаем вес
+    const age = parseFloat(document.getElementById('age').value); // Получаем возраст
 
     // Валидация данных
     if (isNaN(height) || height < 50 || height > 250) {
@@ -39,11 +48,11 @@ document.getElementById("calculate").addEventListener("click", function() {
     const B = (weight * 10 + height * 6.25 - (age * 5 + 5)) * activity;
 
     let C;
-    if (goal === "stay") {
+    if (goal === 'stay') {
         C = B; // Остаться в весе
-    } else if (goal === "gain") {
+    } else if (goal === 'gain') {
         C = B * 1.03; // Набрать вес (+3%)
-    } else if (goal === "lose") {
+    } else if (goal === 'lose') {
         C = B * 0.7; // Сбросить вес (-30%)
     }
 
@@ -56,7 +65,11 @@ document.getElementById("calculate").addEventListener("click", function() {
         age: age,
         result: C.toFixed(2) // Округляем результат до 2 знаков после запятой
     };
-    localStorage.setItem("userData", JSON.stringify(userData));
+    /**
+     * Зберігає дані користувача у локальному сховищі браузера.
+     * @param {Object} userData - Об'єкт з інформацією про користувача і результат.
+     */
+    localStorage.setItem('userData', JSON.stringify(userData));
 
     // Показываем результат
     showResult(C.toFixed(2));
@@ -64,61 +77,61 @@ document.getElementById("calculate").addEventListener("click", function() {
 
 // Функция для отображения результата
 function showResult(result) {
-    const resultElement = document.getElementById("result-value");
+    const resultElement = document.getElementById('result-value');
     resultElement.textContent = `${result} ккал`; // Выводим результат
 
-    const overlay = document.getElementById("result-overlay");
-    overlay.style.display = "flex"; // Показываем оверлей
-    overlay.style.animation = "fadeIn 0.3s ease-in-out"; // Анимация появления
+    const overlay = document.getElementById('result-overlay');
+    overlay.style.display = 'flex'; // Показываем оверлей
+    overlay.style.animation = 'fadeIn 0.3s ease-in-out'; // Анимация появления
 }
 
 // Закрываем блок с результатом
-document.getElementById("close-result").addEventListener("click", function() {
-    const overlay = document.getElementById("result-overlay");
-    overlay.style.animation = "fadeOut 0.3s ease-in-out"; // Анимация исчезновения
+document.getElementById('close-result').addEventListener('click', function() {
+    const overlay = document.getElementById('result-overlay');
+    overlay.style.animation = 'fadeOut 0.3s ease-in-out'; // Анимация исчезновения
 
     // Скрываем оверлей после завершения анимации
     setTimeout(() => {
-        overlay.style.display = "none";
+        overlay.style.display = 'none';
     }, 300); // 300ms — длительность анимации
 });
 
 // Очистка данных из localStorage и формы
-document.getElementById("clear-data").addEventListener("click", function() {
-    localStorage.removeItem("userData"); // Удаляем данные из localStorage
+document.getElementById('clear-data').addEventListener('click', function() {
+    localStorage.removeItem('userData'); // Удаляем данные из localStorage
 
     // Очищаем форму
-    document.getElementById("goal").value = "stay";
-    document.getElementById("activity").value = "1.38";
-    document.getElementById("height").value = "";
-    document.getElementById("weight").value = "";
-    document.getElementById("age").value = "";
+    document.getElementById('goal').value = 'stay';
+    document.getElementById('activity').value = '1.38';
+    document.getElementById('height').value = '';
+    document.getElementById('weight').value = '';
+    document.getElementById('age').value = '';
 
     // Скрываем блок с результатом
-    const overlay = document.getElementById("result-overlay");
-    overlay.style.display = "none";
+    const overlay = document.getElementById('result-overlay');
+    overlay.style.display = 'none';
 });
 
 // Загрузка сохраненных данных при загрузке страницы
-document.addEventListener("DOMContentLoaded", function() {
-    const savedData = localStorage.getItem("userData");
+document.addEventListener('DOMContentLoaded', function() {
+    const savedData = localStorage.getItem('userData');
     if (savedData) {
         const userData = JSON.parse(savedData);
 
         // Заполняем форму сохраненными данными
-        document.getElementById("goal").value = userData.goal;
-        document.getElementById("activity").value = userData.activity;
-        document.getElementById("height").value = userData.height;
-        document.getElementById("weight").value = userData.weight;
-        document.getElementById("age").value = userData.age;
+        document.getElementById('goal').value = userData.goal;
+        document.getElementById('activity').value = userData.activity;
+        document.getElementById('height').value = userData.height;
+        document.getElementById('weight').value = userData.weight;
+        document.getElementById('age').value = userData.age;
 
         // Показываем результат
-        const resultElement = document.getElementById("result-value");
+        const resultElement = document.getElementById('result-value');
         resultElement.textContent = `${userData.result} ккал`;
 
         // Показываем блок с результатом
-        const overlay = document.getElementById("result-overlay");
-        overlay.style.display = "flex";
+        const overlay = document.getElementById('result-overlay');
+        overlay.style.display = 'flex';
     }
 });
 
@@ -128,22 +141,22 @@ document.addEventListener("DOMContentLoaded", function() {
 
 // ----------RAZION----------
 
-document.addEventListener("DOMContentLoaded", function() {
+document.addEventListener('DOMContentLoaded', function() {
     const modal = document.getElementById("meal-modal");
     const calculateBtn = document.getElementById("start");
     const regenerateBtn = document.getElementById("regenerate-btn");
     // const closeBtn = document.getElementById("close-modal-btn");
     // const closeModalBtn = document.querySelector(".meal-modal-close");
 
-    document.getElementById("close-result-two").addEventListener("click", function() {
-    const overlay = document.getElementById("meal-modal");
-    overlay.style.animation = "fadeOut 0.3s ease-in-out"; // Анимация исчезновения
-    // Скрываем оверлей после завершения анимации
-    setTimeout(() => {
-        overlay.style.display = "none";
-    }, 300); // 300ms — длительность анимации
+    document.getElementById('close-result-two').addEventListener('click', function() {
+        const overlay = document.getElementById('meal-modal');
+        overlay.style.animation = 'fadeOut 0.3s ease-in-out'; // Анимация исчезновения
+        // Скрываем оверлей после завершения анимации
+        setTimeout(() => {
+            overlay.style.display = 'none';
+        }, 300); // 300ms — длительность анимации
     });
-    
+
     let currentPlan = [];
     let usedMeals = new Set();
 
@@ -172,7 +185,7 @@ document.addEventListener("DOMContentLoaded", function() {
         // Сброс данных
         currentPlan = [];
         usedMeals = new Set();
-        
+
         // Генерация плана
         let totalDaysCalories = 0;
         let dayPlans = [];
@@ -180,62 +193,62 @@ document.addEventListener("DOMContentLoaded", function() {
         for (let day = 1; day <= days; day++) {
             let dayCalories = 0;
             let dayMeals = [];
-            
+
             const baseMealCalories = calories / mealsPerDay;
             const lastMealBonus = calories * 0.05;
-            
+
             for (let meal = 1; meal <= mealsPerDay; meal++) {
                 let mealCalories = baseMealCalories;
                 if (meal === mealsPerDay) mealCalories += lastMealBonus;
                 mealCalories = Math.round(mealCalories / 10) * 10;
-                
+
                 try {
                     const mainCourse = getRandomMainCourse();
                     const side = getRandomSide(mainCourse.type);
                     const vegetable = getRandomVegetable();
                     const addition = getRandomAddition();
-                    
+
                     const mealComponents = [
-                        calculateComponent(mainCourse, mealCalories * 0.50, "main"),
-                        calculateComponent(side, mealCalories * 0.30, "side"),
-                        calculateComponent(vegetable, mealCalories * 0.15, "vegetable"),
-                        calculateComponent(addition, mealCalories * 0.05, "addition")
+                        calculateComponent(mainCourse, mealCalories * 0.50, 'main'),
+                        calculateComponent(side, mealCalories * 0.30, 'side'),
+                        calculateComponent(vegetable, mealCalories * 0.15, 'vegetable'),
+                        calculateComponent(addition, mealCalories * 0.05, 'addition')
                     ];
-                    
+
                     // Корректировка веса
                     const totalMealCalories = mealComponents.reduce((sum, c) => sum + c.calories, 0);
                     const difference = mealCalories - totalMealCalories;
-                    
+
                     if (Math.abs(difference) > 10) {
                         const main = mealComponents[0];
                         const caloriesPerGram = main.calories / main.weight;
                         const adjustment = difference / caloriesPerGram;
-                        
+
                         main.weight = Math.max(50, Math.round(main.weight + adjustment));
                         main.calories = Math.round(main.weight * caloriesPerGram);
                         main.protein = Math.round((main.weight * main.proteinPer100g) / 100 * 10) / 10;
                         main.carbs = Math.round((main.weight * main.carbsPer100g) / 100 * 10) / 10;
                         main.fat = Math.round((main.weight * main.fatPer100g) / 100 * 10) / 10;
                     }
-                    
+
                     dayMeals.push({
                         components: mealComponents,
                         totalCalories: mealComponents.reduce((sum, c) => sum + c.calories, 0)
                     });
-                    
+
                     dayCalories += mealComponents.reduce((sum, c) => sum + c.calories, 0);
-                    
+
                     usedMeals.add(mainCourse.name);
                     usedMeals.add(side.name);
                 } catch (e) {
                     console.error("Помилка генерації:", e);
                 }
             }
-            
-            dayPlans.push({ 
-                day, 
-                meals: dayMeals, 
-                totalCalories: Math.round(dayCalories) 
+
+            dayPlans.push({
+                day,
+                meals: dayMeals,
+                totalCalories: Math.round(dayCalories)
             });
             totalDaysCalories += dayCalories;
         }
@@ -243,13 +256,13 @@ document.addEventListener("DOMContentLoaded", function() {
         // Финальная корректировка
         const totalTargetCalories = calories * days;
         const totalDifference = totalTargetCalories - totalDaysCalories;
-        
+
         if (Math.abs(totalDifference) > 50) {
             currentPlan = adjustTotalCalories(dayPlans, totalTargetCalories, totalDaysCalories);
         } else {
             currentPlan = dayPlans;
         }
-        
+
         displayMealPlan();
         modal.style.display = "block";
     }
@@ -258,7 +271,7 @@ document.addEventListener("DOMContentLoaded", function() {
         const weight = Math.round((targetCalories * 100) / item.caloriesPer100g);
         return {
             name: item.name,
-            type: type === "main" ? (item.type === "fish" ? "fish" : "meat") : type,
+            type: type === 'main' ? (item.type === 'fish' ? 'fish' : 'meat') : type,
             weight: weight,
             calories: Math.round((weight * item.caloriesPer100g) / 100),
             proteinPer100g: item.proteinPer100g,
@@ -277,7 +290,7 @@ document.addEventListener("DOMContentLoaded", function() {
                 const adjustedComponents = meal.components.map(comp => {
                     const newCalories = Math.round(comp.calories * factor);
                     const newWeight = Math.round((newCalories * 100) / (comp.calories / comp.weight * 100));
-                    
+
                     return {
                         ...comp,
                         weight: newWeight,
@@ -287,14 +300,14 @@ document.addEventListener("DOMContentLoaded", function() {
                         fat: Math.round((newWeight * comp.fatPer100g) / 100 * 10) / 10
                     };
                 });
-                
+
                 return {
                     ...meal,
                     components: adjustedComponents,
                     totalCalories: adjustedComponents.reduce((sum, c) => sum + c.calories, 0)
                 };
             });
-            
+
             return {
                 ...day,
                 meals: adjustedMeals,
@@ -314,40 +327,40 @@ document.addEventListener("DOMContentLoaded", function() {
         const pool = available.length > 0 ? available : recipes.mainCourses;
         return pool[Math.floor(Math.random() * pool.length)];
     }
-    
+
     function getRandomSide(mainType) {
-        const available = recipes.sides.filter(s => 
+        const available = recipes.sides.filter(s =>
             s.pairsWith.includes(mainType) && !usedMeals.has(s.name)
         );
-        const pool = available.length > 0 ? available : 
-                     recipes.sides.filter(s => s.pairsWith.includes(mainType));
+        const pool = available.length > 0 ? available :
+            recipes.sides.filter(s => s.pairsWith.includes(mainType));
         return pool[Math.floor(Math.random() * pool.length)];
     }
-    
+
     function getRandomVegetable() {
         const available = recipes.vegetables.filter(v => !usedMeals.has(v.name));
         const pool = available.length > 0 ? available : recipes.vegetables;
         return pool[Math.floor(Math.random() * pool.length)];
     }
-    
+
     function getRandomAddition() {
         return recipes.additions[Math.floor(Math.random() * recipes.additions.length)];
     }
 
     function displayMealPlan() {
-        let html = "";
+        let html = '';
         const totalTargetCalories = parseInt(document.getElementById("calories").value) * currentPlan.length;
         const totalActualCalories = currentPlan.reduce((sum, day) => sum + day.totalCalories, 0);
         const totalDifference = totalActualCalories - totalTargetCalories;
-        
+
         currentPlan.forEach(dayPlan => {
             const dayTarget = totalTargetCalories / currentPlan.length;
             const dayDifference = dayPlan.totalCalories - dayTarget;
-            
+
             html += `<div class="meal-day"><h3>День ${dayPlan.day} (${dayPlan.totalCalories} ккал)`;
             // html += `<span class="calorie-difference ${dayDifference > 0 ? 'over' : 'under'}">`;
             // html += `${dayDifference > 0 ? '+' : ''}${Math.round(dayDifference)} ккал</span></h3>`;
-            
+
             dayPlan.meals.forEach((meal, index) => {
                 html += `
                     <div class="meal-item">
@@ -359,33 +372,33 @@ document.addEventListener("DOMContentLoaded", function() {
                                 ${comp.calories} ккал 
                                 (Б:${comp.protein}г Ж:${comp.fat}г В:${comp.carbs}г)
                             </div>
-                        `).join("")}
+                        `).join('')}
                     </div>
                 `;
             });
-            
-            html += "</div>";
+
+            html += `</div>`;
         });
-        
+
         // Общая статистика
         // html += `<div class="total-summary">
-        //     <strong>Загалом:</strong> ${totalActualCalories} ккал 
+        //     <strong>Загалом:</strong> ${totalActualCalories} ккал
         //     <span class="calorie-difference ${totalDifference > 0 ? 'over' : 'under'}">
         //     (${totalDifference > 0 ? '+' : ''}${Math.round(totalDifference)} ккал)
         //     </span>
         // </div>`;
-        
+
         document.getElementById("meal-plan-result").innerHTML = html;
     }
 
     function getComponentName(type) {
         const names = {
-            "meat": "М'ясо",
-            "poultry": "Пташина",
-            "fish": "Риба",
-            "side": "Гарнір",
-            "vegetable": "Овочі",
-            "addition": "Добавка"
+            'meat': 'М\'ясо',
+            'poultry': 'Пташина',
+            'fish': 'Риба',
+            'side': 'Гарнір',
+            'vegetable': 'Овочі',
+            'addition': 'Добавка'
         };
         return names[type] || type;
     }
