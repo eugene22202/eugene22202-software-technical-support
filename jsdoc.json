@@ -1,0 +1,13 @@
+{
+  "tags": {
+    "allowUnknownTags": true
+  },
+  "source": {
+    "include": ["js/"],
+    "includePattern": ".+\\.js(doc|x)?$"
+  },
+  "opts": {
+    "destination": "docs/jsdoc",
+    "recurse": true
+  }
+}

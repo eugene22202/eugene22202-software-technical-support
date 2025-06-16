@@ -1,0 +1,12 @@
+{
+  "name": "diplomsite",
+  "version": "1.0.0",
+  "description": "Landing page for diploma project",
+  "main": "index.js",
+  "scripts": {
+    "docs": "jsdoc -c jsdoc.json"
+  },
+  "devDependencies": {
+    "jsdoc": "^4.0.4"
+  }
+}
