@@ -1,32 +1,181 @@
-// ----------ГЛОБАЛЬНІ НАЛАШТУВАННЯ ЛОГУВАННЯ----------
+// ----------ГЛОБАЛЬНІ НАЛАШТУВАННЯ ЛОГУВАННЯ ТА ЛОКАЛІЗАЦІЇ----------
 const LOGGING_ENDPOINT = '/api/log_error'; // Уявна адреса вашого серверного ендпоінту для логів
 const LOG_LEVEL = 'debug'; // 'info', 'warn', 'error', 'debug' - для фільтрації логів в консолі
 
-// Функція для відправки логів на сервер
+// Визначення поточної мови (можна отримати з localStorage, navigator.language тощо)
+const currentLanguage = 'uk'; // 'uk' для української, 'en' для англійської
+
+// Об'єкт для локалізації повідомлень про помилки
+const errorMessages = {
+    uk: {
+        // Загальні помилки
+        'GENERIC_ERROR_TITLE': 'Виникла помилка',
+        'GENERIC_ERROR_MESSAGE': 'Щось пішло не так. Будь ласка, спробуйте ще раз або зверніться до підтримки, якщо проблема повториться.',
+        'CONTACT_SUPPORT_INSTRUCTIONS': 'Ви можете повідомити про цю проблему, натиснувши кнопку нижче. Це допоможе нам швидко її вирішити.',
+        'REPORT_BUTTON_TEXT': 'Повідомити про проблему',
+        'CLOSE_BUTTON_TEXT': 'Закрити',
+
+        // Помилки калькулятора
+        'CALC_WARN_001_TITLE': 'Некоректний рівень активності',
+        'CALC_WARN_001_MESSAGE': 'Будь ласка, оберіть дійсний рівень фізичної активності.',
+        'CALC_WARN_002_TITLE': 'Некоректний ріст',
+        'CALC_WARN_002_MESSAGE': 'Будь ласка, введіть коректний ріст (від 50 до 250 см).',
+        'CALC_WARN_003_TITLE': 'Некоректна вага',
+        'CALC_WARN_003_MESSAGE': 'Будь ласка, введіть коректну вагу (від 30 до 300 кг).',
+        'CALC_WARN_004_TITLE': 'Некоректний вік',
+        'CALC_WARN_004_MESSAGE': 'Будь ласка, введіть коректний вік (від 10 до 120 років).',
+        'CALC_ERR_001_TITLE': 'Помилка розрахунку',
+        'CALC_ERR_001_MESSAGE': 'Не вдалося розрахувати базовий обмін речовин. Перевірте введені дані.',
+        'CALC_ERR_002_TITLE': 'Невідома мета',
+        'CALC_ERR_002_MESSAGE': 'Вибрана мета розрахунку калорій є недійсною. Будь ласка, оберіть одну з доступних цілей.',
+        'CALC_ERR_003_TITLE': 'Помилка розрахунку калорій',
+        'CALC_ERR_003_MESSAGE': 'Кінцевий розрахунок калорій неможливий. Перевірте всі введені дані.',
+
+        // Помилки localStorage
+        'STORAGE_ERR_001_TITLE': 'Помилка збереження даних',
+        'STORAGE_ERR_001_MESSAGE': 'Ваші дані не вдалося зберегти. Можливо, ваш браузер переповнений або налаштований на приватний режим.',
+        'STORAGE_ERR_003_TITLE': 'Помилка завантаження даних',
+        'STORAGE_ERR_003_MESSAGE': 'Не вдалося завантажити збережені дані. Можливо, вони були пошкоджені.',
+
+        // Помилки DOM
+        'DOM_ERR_001_TITLE': 'Помилка відображення',
+        'DOM_ERR_001_MESSAGE': 'Не вдалося знайти необхідний елемент для відображення результату. Будь ласка, спробуйте оновити сторінку.',
+        'DOM_ERR_002_TITLE': 'Помилка відображення',
+        'DOM_ERR_002_MESSAGE': 'Не вдалося знайти елемент для відображення оверлея. Будь ласка, спробуйте оновити сторінку.',
+        'DOM_ERR_003_TITLE': 'Помилка відображення',
+        'DOM_ERR_003_MESSAGE': 'Деякі елементи інтерфейсу відсутні. Будь ласка, спробуйте оновити сторінку.',
+
+        // Помилки генератора раціону
+        'RAZION_DOM_ERR_001_TITLE': 'Помилка інтерфейсу',
+        'RAZION_DOM_ERR_001_MESSAGE': 'Деякі необхідні елементи для генератора раціону не знайдено. Будь ласка, оновіть сторінку.',
+        'RAZION_WARN_001_TITLE': 'Некоректні калорії для раціону',
+        'RAZION_WARN_001_MESSAGE': 'Будь ласка, введіть кількість калорій для раціону від 1000 до 5000.',
+        'RAZION_WARN_002_TITLE': 'Некоректна кількість прийомів їжі',
+        'RAZION_WARN_002_MESSAGE': 'Будь ласка, введіть кількість прийомів їжі від 1 до 6.',
+        'RAZION_WARN_003_TITLE': 'Некоректна кількість днів',
+        'RAZION_WARN_003_MESSAGE': 'Будь ласка, введіть кількість днів для раціону від 1 до 7.',
+        'RAZION_ERR_001_TITLE': 'Відсутні дані про рецепти',
+        'RAZION_ERR_001_MESSAGE': 'Не вдалося завантажити дані про рецепти. Функціонал генератора раціону недоступний.',
+        'RAZION_WARN_004_TITLE': 'Неповний план харчування',
+        'RAZION_WARN_004_MESSAGE': 'Не вдалося знайти достатньо унікальних компонентів для всіх прийомів їжі. Спробуйте ще раз.',
+        'RAZION_ERR_002_TITLE': 'Помилка розрахунку страви',
+        'RAZION_ERR_002_MESSAGE': 'Виникла помилка при розрахунку компонентів однієї зі страв. Це може призвести до неточних значень.',
+        'RAZION_ERR_003_TITLE': 'Помилка генерації прийому їжі',
+        'RAZION_ERR_003_MESSAGE': 'Під час генерації плану виникла проблема з одним із прийомів їжі. Спробуйте ще раз.',
+        'RAZION_ADJUST_WARN_001_TITLE': 'Проблема з коригуванням калорій',
+        'RAZION_ADJUST_WARN_001_MESSAGE': 'Не вдалося скоригувати загальну калорійність плану, оскільки вона дорівнює нулю.',
+        'RAZION_ADJUST_WARN_002_TITLE': 'Проблема з коригуванням ваги',
+        'RAZION_ADJUST_WARN_002_MESSAGE': 'Виникла проблема при коригуванні ваги компонента. Це може вплинути на точність калорій.',
+        'RAZION_WARN_005_TITLE': 'План не згенеровано',
+        'RAZION_WARN_005_MESSAGE': 'Будь ласка, спочатку згенеруйте план харчування, натиснувши кнопку "START".',
+        'RECIPE_ERR_001_TITLE': 'Відсутні рецепти',
+        'RECIPE_ERR_001_MESSAGE': 'Відсутні дані про основні страви. Будь ласка, зверніться до адміністратора.',
+        'RECIPE_ERR_002_TITLE': 'Відсутні рецепти',
+        'RECIPE_ERR_002_MESSAGE': 'Відсутні дані про гарніри. Будь ласка, зверніться до адміністратора.',
+        'RECIPE_ERR_003_TITLE': 'Відсутні рецепти',
+        'RECIPE_ERR_003_MESSAGE': 'Відсутні дані про овочі. Будь ласка, зверніться до адміністратора.',
+        'RECIPE_ERR_004_TITLE': 'Відсутні рецепти',
+        'RECIPE_ERR_004_MESSAGE': 'Відсутні дані про добавки. Будь ласка, зверніться до адміністратора.'
+    },
+    en: {
+        // Generic Errors
+        'GENERIC_ERROR_TITLE': 'An error occurred',
+        'GENERIC_ERROR_MESSAGE': 'Something went wrong. Please try again or contact support if the problem persists.',
+        'CONTACT_SUPPORT_INSTRUCTIONS': 'You can report this issue by clicking the button below. This helps us resolve it quickly.',
+        'REPORT_BUTTON_TEXT': 'Report Issue',
+        'CLOSE_BUTTON_TEXT': 'Close',
+
+        // Calculator Errors
+        'CALC_WARN_001_TITLE': 'Invalid Activity Level',
+        'CALC_WARN_001_MESSAGE': 'Please select a valid physical activity level.',
+        'CALC_WARN_002_TITLE': 'Invalid Height',
+        'CALC_WARN_002_MESSAGE': 'Please enter a valid height (between 50 and 250 cm).',
+        'CALC_WARN_003_TITLE': 'Invalid Weight',
+        'CALC_WARN_003_MESSAGE': 'Please enter a valid weight (between 30 and 300 kg).',
+        'CALC_WARN_004_TITLE': 'Invalid Age',
+        'CALC_WARN_004_MESSAGE': 'Please enter a valid age (between 10 and 120 years).',
+        'CALC_ERR_001_TITLE': 'Calculation Error',
+        'CALC_ERR_001_MESSAGE': 'Could not calculate basal metabolic rate. Please check your input.',
+        'CALC_ERR_002_TITLE': 'Unknown Goal',
+        'CALC_ERR_002_MESSAGE': 'The selected calorie calculation goal is invalid. Please choose from the available goals.',
+        'CALC_ERR_003_TITLE': 'Calorie Calculation Error',
+        'CALC_ERR_003_MESSAGE': 'Final calorie calculation is not possible. Please check all entered data.',
+
+        // LocalStorage Errors
+        'STORAGE_ERR_001_TITLE': 'Data Saving Error',
+        'STORAGE_ERR_001_MESSAGE': 'Your data could not be saved. Your browser might be full or in private Browse mode.',
+        'STORAGE_ERR_003_TITLE': 'Data Loading Error',
+        'STORAGE_ERR_003_MESSAGE': 'Failed to load saved data. It might be corrupted.',
+
+        // DOM Errors
+        'DOM_ERR_001_TITLE': 'Display Error',
+        'DOM_ERR_001_MESSAGE': 'Could not find the necessary element to display the result. Please try refreshing the page.',
+        'DOM_ERR_002_TITLE': 'Display Error',
+        'DOM_ERR_002_MESSAGE': 'Could not find the overlay element. Please try refreshing the page.',
+        'DOM_ERR_003_TITLE': 'Display Error',
+        'DOM_ERR_003_MESSAGE': 'Some UI elements are missing. Please try refreshing the page.',
+
+        // Meal Plan Generator Errors
+        'RAZION_DOM_ERR_001_TITLE': 'UI Error',
+        'RAZION_DOM_ERR_001_MESSAGE': 'Some required elements for the meal plan generator were not found. Please refresh the page.',
+        'RAZION_WARN_001_TITLE': 'Invalid Calories for Plan',
+        'RAZION_WARN_001_MESSAGE': 'Please enter a calorie amount for the meal plan between 1000 and 5000.',
+        'RAZION_WARN_002_TITLE': 'Invalid Number of Meals',
+        'RAZION_WARN_002_MESSAGE': 'Please enter a number of meals between 1 and 6.',
+        'RAZION_WARN_003_TITLE': 'Invalid Number of Days',
+        'RAZION_WARN_003_MESSAGE': 'Please enter a number of days for the plan between 1 and 7.',
+        'RAZION_ERR_001_TITLE': 'Missing Recipe Data',
+        'RAZION_ERR_001_MESSAGE': 'Could not load recipe data. The meal plan generator is unavailable.',
+        'RAZION_WARN_004_TITLE': 'Incomplete Meal Plan',
+        'RAZION_WARN_004_MESSAGE': 'Could not find enough unique components for all meals. Please try again.',
+        'RAZION_ERR_002_TITLE': 'Meal Component Calculation Error',
+        'RAZION_ERR_002_MESSAGE': 'An error occurred while calculating meal components. This might lead to inaccurate values.',
+        'RAZION_ERR_003_TITLE': 'Meal Generation Error',
+        'RAZION_ERR_003_MESSAGE': 'A problem occurred with one of the meals during plan generation. Please try again.',
+        'RAZION_ADJUST_WARN_001_TITLE': 'Calorie Adjustment Issue',
+        'RAZION_ADJUST_WARN_001_MESSAGE': 'Could not adjust the total plan calories because it is zero.',
+        'RAZION_ADJUST_WARN_002_TITLE': 'Weight Adjustment Issue',
+        'RAZION_ADJUST_WARN_002_MESSAGE': 'A problem occurred while adjusting a component\'s weight. This may affect calorie accuracy.',
+        'RAZION_WARN_005_TITLE': 'Plan Not Generated',
+        'RAZION_WARN_005_MESSAGE': 'Please generate a meal plan first by clicking the "START" button.',
+        'RECIPE_ERR_001_TITLE': 'Missing Recipes',
+        'RECIPE_ERR_001_MESSAGE': 'Missing main course data. Please contact the administrator.',
+        'RECIPE_ERR_002_TITLE': 'Missing Recipes',
+        'RECIPE_ERR_002_MESSAGE': 'Missing side dish data. Please contact the administrator.',
+        'RECIPE_ERR_003_TITLE': 'Missing Recipes',
+        'RECIPE_ERR_003_MESSAGE': 'Missing vegetable data. Please contact the administrator.',
+        'RECIPE_ERR_004_TITLE': 'Missing Recipes',
+        'RECIPE_ERR_004_MESSAGE': 'Missing addition data. Please contact the administrator.'
+    }
+};
+
+// Функція для отримання локалізованого повідомлення
+function getLocalizedMessage(code, type = 'message') {
+    const langMessages = errorMessages[currentLanguage] || errorMessages['en']; // Запасний варіант на англійську
+    return langMessages[`${code}_${type.toUpperCase()}`] || langMessages['GENERIC_ERROR_MESSAGE'];
+}
+
+// Функція для відправки логів на сервер (без змін від попередньої версії)
 function sendLogToServer(logData) {
-    // Перевіряємо, чи є ендпоінт для логування
     if (!LOGGING_ENDPOINT) {
         console.warn("LOGGING_ENDPOINT не визначено. Логи на сервер не відправляються.");
         return;
     }
 
-    // Додаємо загальну контекстну інформацію до кожного логу
     const fullLogData = {
         timestamp: new Date().toISOString(),
         url: window.location.href,
         userAgent: navigator.userAgent,
-        ...logData, // Додаємо передані дані логу (рівень, повідомлення, стек, додаткові дані)
-        // Приклад додавання ID користувача, якщо він є
-        userId: localStorage.getItem('userId') || 'guest', // Припустимо, ви зберігаєте userId в localStorage
-        sessionId: sessionStorage.getItem('sessionId') || 'unknown' // Припустимо, ви використовуєте sessionId
+        ...logData,
+        userId: localStorage.getItem('userId') || 'guest',
+        sessionId: sessionStorage.getItem('sessionId') || 'unknown'
     };
 
-    // Відправляємо лог на сервер
     fetch(LOGGING_ENDPOINT, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
-            'X-Requested-With': 'XMLHttpRequest' // Додатковий заголовок, якщо ваш бекенд його перевіряє
+            'X-Requested-With': 'XMLHttpRequest'
         },
         body: JSON.stringify(fullLogData)
     })
@@ -36,60 +185,103 @@ function sendLogToServer(logData) {
             }
         })
         .catch(error => {
-            // Уникаємо нескінченної рекурсії, якщо помилка виникає при відправці логу
             console.error("Не вдалося відправити лог на сервер:", error);
         });
 }
 
 // Загальна функція логування, яка вирішує, куди відправити лог
-function customLogger(level, message, error = null, context = {}) {
+// Тепер приймає errorKey для локалізованих повідомлень
+function customLogger(level, errorKey, error = null, context = {}) {
     const logEntry = {
         level: level,
-        message: message,
-        context: context
+        errorKey: errorKey, // Унікальний ідентифікатор помилки
+        message: getLocalizedMessage(errorKey, 'message'), // Локалізоване повідомлення для користувача (за замовчуванням)
+        context: context // Додаткова контекстна інформація
     };
 
     if (error) {
         logEntry.errorName = error.name;
-        logEntry.errorMessage = error.message;
+        logEntry.errorMessage = error.message; // Детальніше технічне повідомлення
         logEntry.stack = error.stack;
     }
 
     // Логування в консоль (залежить від рівня LOG_LEVEL)
     if (level === 'debug' && ['debug'].includes(LOG_LEVEL)) {
-        console.debug("DEBUG:", logEntry);
+        console.debug(`DEBUG [${errorKey}]:`, logEntry);
     } else if (level === 'info' && ['debug', 'info'].includes(LOG_LEVEL)) {
-        console.info("INFO:", logEntry);
+        console.info(`INFO [${errorKey}]:`, logEntry);
     } else if (level === 'warn' && ['debug', 'info', 'warn'].includes(LOG_LEVEL)) {
-        console.warn("WARN:", logEntry);
+        console.warn(`WARN [${errorKey}]:`, logEntry);
     } else if (level === 'error' && ['debug', 'info', 'warn', 'error'].includes(LOG_LEVEL)) {
-        console.error("ERROR:", logEntry);
+        console.error(`ERROR [${errorKey}]:`, logEntry);
     }
 
     // Відправка логу на сервер (для рівня 'warn' та 'error' зазвичай)
     if (['warn', 'error'].includes(level)) {
         sendLogToServer(logEntry);
     }
+
+    // Показуємо користувачеві спеціалізоване повідомлення, якщо це 'warn' або 'error'
+    if (['warn', 'error'].includes(level)) {
+        displayUserFriendlyError(errorKey, error, context);
+    }
 }
 
-// ----------CALCULATOR----------
+// Функція для відображення дружнього повідомлення про помилку користувачеві
+function displayUserFriendlyError(errorKey, error, context) {
+    const errorModal = document.getElementById('error-modal');
+    const errorTitle = document.getElementById('error-modal-title');
+    const errorMessage = document.getElementById('error-modal-message');
+    const errorInstructions = document.getElementById('error-modal-instructions');
+    const reportButton = document.getElementById('error-modal-report-btn');
+    const closeButton = document.getElementById('error-modal-close-btn');
 
-// Ограничение ввода до 3 символов в полях роста, веса и возраста
+    // Перевіряємо наявність елементів модального вікна
+    if (!errorModal || !errorTitle || !errorMessage || !errorInstructions || !reportButton || !closeButton) {
+        console.error("Не знайдено всі необхідні елементи для відображення модального вікна помилок.");
+        // Якщо модалка не працює, повертаємось до простого alert
+        alert(`${getLocalizedMessage(errorKey, 'title') || getLocalizedMessage('GENERIC_ERROR_TITLE')}\n\n${getLocalizedMessage(errorKey, 'message') || getLocalizedMessage('GENERIC_ERROR_MESSAGE')}`);
+        return;
+    }
+
+    errorTitle.textContent = getLocalizedMessage(errorKey, 'title') || getLocalizedMessage('GENERIC_ERROR_TITLE');
+    errorMessage.textContent = getLocalizedMessage(errorKey, 'message') || getLocalizedMessage('GENERIC_ERROR_MESSAGE');
+    errorInstructions.textContent = getLocalizedMessage('CONTACT_SUPPORT_INSTRUCTIONS');
+    reportButton.textContent = getLocalizedMessage('REPORT_BUTTON_TEXT');
+    closeButton.textContent = getLocalizedMessage('CLOSE_BUTTON_TEXT');
+
+    // Налаштовуємо кнопку "Повідомити про проблему"
+    reportButton.onclick = function() {
+        // Ми вже відправили лог на сервер через customLogger
+        // Можна додати візуальний зворотний зв'язок (наприклад, "Дякуємо, ваш звіт відправлено!")
+        alert(getLocalizedMessage('REPORT_SENT_CONFIRMATION', 'message') || "Дякуємо! Вашу проблему було надіслано.");
+        errorModal.style.display = 'none'; // Закрити модалку після відправки
+    };
+
+    closeButton.onclick = function() {
+        errorModal.style.display = 'none';
+    };
+
+    errorModal.style.display = 'flex'; // Показати модальне вікно
+}
+
+//----------CALCULATOR----------
+// (Весь код калькулятора, як і раніше, але замість console.warn/alert
+// та console.error використовуватимемо customLogger з відповідними errorKey)
+
 document.getElementById('height').addEventListener('input', function() {
     if (this.value.length > 3) this.value = this.value.slice(0, 3);
 });
-
 document.getElementById('weight').addEventListener('input', function() {
     if (this.value.length > 3) this.value = this.value.slice(0, 3);
 });
-
 document.getElementById('age').addEventListener('input', function() {
     if (this.value.length > 3) this.value = this.value.slice(0, 3);
 });
 
 console.log("Програма запущена — калькулятор готовий до роботи.");
 document.getElementById('calculate').addEventListener('click', function() {
-    customLogger('info', "Натиснута кнопка 'START' калькулятора.");
+    customLogger('info', 'CALC_INFO_001'); // Інформаційний лог
 
     try {
         const goal = document.getElementById('goal').value;
@@ -98,34 +290,28 @@ document.getElementById('calculate').addEventListener('click', function() {
         const weight = parseFloat(document.getElementById('weight').value);
         const age = parseFloat(document.getElementById('age').value);
 
-        // Валидация данных с уникальными ID и контекстом
         if (isNaN(activity) || activity <= 0) {
-            alert("Будь ласка, оберіть коректний рівень активності.");
-            customLogger('warn', "Некоректний рівень активності", null, { code: 'CALC_WARN_001', value: activity });
+            customLogger('warn', 'CALC_WARN_001', null, { value: activity });
             return;
         }
         if (isNaN(height) || height < 50 || height > 250) {
-            alert("Будь ласка, введіть коректний ріст (від 50 до 250 см).");
-            customLogger('warn', "Некоректний ріст", null, { code: 'CALC_WARN_002', value: height });
+            customLogger('warn', 'CALC_WARN_002', null, { value: height });
             return;
         }
         if (isNaN(weight) || weight < 30 || weight > 300) {
-            alert("Будь ласка, введіть коректну вагу (від 30 до 300 кг).");
-            customLogger('warn', "Некоректна вага", null, { code: 'CALC_WARN_003', value: weight });
+            customLogger('warn', 'CALC_WARN_003', null, { value: weight });
             return;
         }
         if (isNaN(age) || age < 10 || age > 120) {
-            alert("Будь ласка, введіть коректний вік (від 10 до 120 років).");
-            customLogger('warn', "Некоректний вік", null, { code: 'CALC_WARN_004', value: age });
+            customLogger('warn', 'CALC_WARN_004', null, { value: age });
             return;
         }
 
         let B = (weight * 10 + height * 6.25 - (age * 5 + 5)) * activity;
         if (isNaN(B) || !isFinite(B)) {
-            const error = new Error("Помилка розрахунку базового обміну речовин (B).");
-            customLogger('error', error.message, error, { code: 'CALC_ERR_001', inputs: { weight, height, age, activity } });
-            alert(`Виникла помилка: ${error.message}. Будь ласка, перевірте введені дані.`);
-            return; // Додано return, щоб зупинити виконання
+            const error = new Error("Calculation of basal metabolic rate (B) failed.");
+            customLogger('error', 'CALC_ERR_001', error, { inputs: { weight, height, age, activity } });
+            return;
         }
 
         let C;
@@ -136,41 +322,33 @@ document.getElementById('calculate').addEventListener('click', function() {
         } else if (goal === 'lose') {
             C = B * 0.7;
         } else {
-            const error = new Error("Невідома мета розрахунку калорій.");
-            customLogger('error', error.message, error, { code: 'CALC_ERR_002', goal: goal });
-            alert(`Виникла помилка: ${error.message}. Будь ласка, перевірте введені дані.`);
-            return; // Додано return
+            const error = new Error("Unknown calorie calculation goal.");
+            customLogger('error', 'CALC_ERR_002', error, { goal: goal });
+            return;
         }
 
         if (isNaN(C) || !isFinite(C)) {
-            const error = new Error("Помилка розрахунку кінцевих калорій (C).");
-            customLogger('error', error.message, error, { code: 'CALC_ERR_003', valueB: B, goal: goal });
-            alert(`Виникла помилка: ${error.message}. Будь ласка, перевірте введені дані.`);
-            return; // Додано return
+            const error = new Error("Final calorie calculation (C) failed.");
+            customLogger('error', 'CALC_ERR_003', error, { valueB: B, goal: goal });
+            return;
         }
 
         const userData = {
-            goal: goal,
-            activity: activity,
-            height: height,
-            weight: weight,
-            age: age,
+            goal: goal, activity: activity, height: height, weight: weight, age: age,
             result: C.toFixed(2)
         };
 
         try {
             localStorage.setItem('userData', JSON.stringify(userData));
-            customLogger('info', "Дані користувача успішно збережено.", null, { code: 'STORAGE_INFO_001' });
+            customLogger('info', 'STORAGE_INFO_001');
         } catch (e) {
-            customLogger('error', "Помилка збереження даних у localStorage.", e, { code: 'STORAGE_ERR_001', key: 'userData' });
-            alert("Не вдалося зберегти дані. Можливо, localStorage переповнено або недоступне.");
+            customLogger('error', 'STORAGE_ERR_001', e, { key: 'userData' });
         }
 
         showResult(C.toFixed(2));
 
     } catch (error) {
-        customLogger('error', "Виникла несподівана помилка в калькуляторі.", error, { code: 'CALC_UNEXPECTED_ERR' });
-        alert(`Виникла невідома помилка: ${error.message || "Невідома помилка"}. Будь ласка, перевірте введені дані.`);
+        customLogger('error', 'GENERIC_ERROR', error); // Загальна помилка для непередбачених випадків
     }
 });
 
@@ -179,7 +357,7 @@ function showResult(result) {
     if (resultElement) {
         resultElement.textContent = `${result} ккал`;
     } else {
-        customLogger('error', "Елемент 'result-value' не знайдено.", null, { code: 'DOM_ERR_001', elementId: 'result-value' });
+        customLogger('error', 'DOM_ERR_001', null, { elementId: 'result-value' });
     }
 
     const overlay = document.getElementById('result-overlay');
@@ -187,28 +365,26 @@ function showResult(result) {
         overlay.style.display = 'flex';
         overlay.style.animation = 'fadeIn 0.3s ease-in-out';
     } else {
-        customLogger('error', "Елемент 'result-overlay' не знайдено.", null, { code: 'DOM_ERR_002', elementId: 'result-overlay' });
+        customLogger('error', 'DOM_ERR_002', null, { elementId: 'result-overlay' });
     }
 }
 
 document.getElementById('close-result').addEventListener('click', function() {
-    customLogger('info', "Закриття блоку результату калькулятора.");
+    customLogger('info', 'CALC_INFO_002');
     const overlay = document.getElementById('result-overlay');
     if (overlay) {
         overlay.style.animation = 'fadeOut 0.3s ease-in-out';
-        setTimeout(() => {
-            overlay.style.display = 'none';
-        }, 300);
+        setTimeout(() => { overlay.style.display = 'none'; }, 300);
     }
 });
 
 document.getElementById('clear-data').addEventListener('click', function() {
-    customLogger('info', "Очищення даних калькулятора та форми.");
+    customLogger('info', 'CALC_INFO_003');
     try {
         localStorage.removeItem('userData');
-        customLogger('info', "Дані користувача видалено з localStorage.", null, { code: 'STORAGE_INFO_002' });
+        customLogger('info', 'STORAGE_INFO_002');
     } catch (e) {
-        customLogger('error', "Помилка видалення даних з localStorage.", e, { code: 'STORAGE_ERR_002', key: 'userData' });
+        customLogger('error', 'STORAGE_ERR_002', e, { key: 'userData' });
     }
 
     document.getElementById('goal').value = 'stay';
@@ -224,16 +400,16 @@ document.getElementById('clear-data').addEventListener('click', function() {
 });
 
 document.addEventListener('DOMContentLoaded', function() {
-    customLogger('info', "Сторінка завантажена. Спроба завантажити збережені дані.");
+    customLogger('info', 'PAGE_LOAD_INFO_001');
     try {
         const savedData = localStorage.getItem('userData');
         if (savedData) {
             let userData;
             try {
                 userData = JSON.parse(savedData);
-                customLogger('info', "Збережені дані успішно завантажено та розпарсено.", null, { code: 'STORAGE_INFO_003' });
+                customLogger('info', 'STORAGE_INFO_003');
             } catch (e) {
-                customLogger('error', "Помилка парсингу JSON з localStorage.", e, { code: 'STORAGE_ERR_003', rawData: savedData });
+                customLogger('error', 'STORAGE_ERR_003', e, { rawData: savedData });
                 localStorage.removeItem('userData');
                 return;
             }
@@ -260,10 +436,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 overlay.style.display = 'flex';
             }
         } else {
-            customLogger('info', "Не знайдено збережених даних у localStorage.", null, { code: 'STORAGE_INFO_004' });
+            customLogger('info', 'STORAGE_INFO_004');
         }
     } catch (error) {
-        customLogger('error', "Помилка при завантаженні збережених даних на DOMContentLoaded.", error, { code: 'PAGE_LOAD_ERR_001' });
+        customLogger('error', 'PAGE_LOAD_ERR_001', error);
     }
 });
 
@@ -274,27 +450,24 @@ document.addEventListener('DOMContentLoaded', function() {
 
 document.addEventListener('DOMContentLoaded', function() {
     const modal = document.getElementById("meal-modal");
-    // Переконайтеся, що ID кнопки відповідає вашому HTML
-    const calculateBtn = document.getElementById("start"); // Або 'generate-meal-plan'
+    const calculateBtn = document.getElementById("start");
     const regenerateBtn = document.getElementById("regenerate-btn");
     const closeBtn = document.getElementById("close-modal-btn");
     const closeModalBtn = document.querySelector(".meal-modal-close");
 
     if (!modal || !calculateBtn || !regenerateBtn) {
-        customLogger('error', "Деякі необхідні елементи DOM для розділу RAZION не знайдені.", null, { code: 'RAZION_DOM_ERR_001' });
+        customLogger('error', 'RAZION_DOM_ERR_001');
         return;
     }
 
     const closeResultTwo = document.getElementById('close-result-two');
     if (closeResultTwo) {
         closeResultTwo.addEventListener('click', function() {
-            customLogger('info', "Закриття модального вікна раціону.");
+            customLogger('info', 'RAZION_INFO_001_CLOSE_MODAL');
             const overlay = document.getElementById('meal-modal');
             if (overlay) {
                 overlay.style.animation = 'fadeOut 0.3s ease-in-out';
-                setTimeout(() => {
-                    overlay.style.display = 'none';
-                }, 300);
+                setTimeout(() => { overlay.style.display = 'none'; }, 300);
             }
         });
     }
@@ -310,12 +483,12 @@ document.addEventListener('DOMContentLoaded', function() {
     function closeModal() {
         if (modal) {
             modal.style.display = "none";
-            customLogger('info', "Модальне вікно раціону закрито.");
+            customLogger('info', 'RAZION_INFO_002_MODAL_CLOSED');
         }
     }
 
     function generateMealPlan() {
-        customLogger('info', "Початок генерації плану харчування.");
+        customLogger('info', 'RAZION_INFO_003_GENERATE_START');
         try {
             const caloriesInput = document.getElementById("calories");
             if (!caloriesInput) {
@@ -335,27 +508,23 @@ document.addEventListener('DOMContentLoaded', function() {
             }
             const days = Math.min(7, Math.max(1, parseInt(daysInput.value) || 1));
 
-            // Перевірка введення з унікальними ID та контекстом
             if (isNaN(calories) || calories < 1000 || calories > 5000) {
-                alert("Будь ласка, введіть коректну кількість калорій (від 1000 до 5000).");
-                customLogger('warn', "Некоректна кількість калорій для раціону.", null, { code: 'RAZION_WARN_001', value: calories });
+                customLogger('warn', 'RAZION_WARN_001', null, { value: calories });
                 return;
             }
             if (isNaN(mealsPerDay) || mealsPerDay < 1 || mealsPerDay > 6) {
-                alert("Будь ласка, введіть коректну кількість прийомів їжі (від 1 до 6).");
-                customLogger('warn', "Некоректна кількість прийомів їжі.", null, { code: 'RAZION_WARN_002', value: mealsPerDay });
+                customLogger('warn', 'RAZION_WARN_002', null, { value: mealsPerDay });
                 return;
             }
             if (isNaN(days) || days < 1 || days > 7) {
-                alert("Будь ласка, введіть коректну кількість днів (від 1 до 7).");
-                customLogger('warn', "Некоректна кількість днів.", null, { code: 'RAZION_WARN_003', value: days });
+                customLogger('warn', 'RAZION_WARN_003', null, { value: days });
                 return;
             }
 
             if (typeof recipes === 'undefined' || !recipes.mainCourses || !recipes.sides || !recipes.vegetables || !recipes.additions) {
                 const error = new Error("Об'єкт 'recipes' не визначений або відсутні необхідні дані про рецепти.");
-                customLogger('error', error.message, error, { code: 'RAZION_ERR_001', recipesDefined: typeof recipes !== 'undefined' });
-                throw error; // Викидаємо, щоб Catch блок його спіймав
+                customLogger('error', 'RAZION_ERR_001', error, { recipesDefined: typeof recipes !== 'undefined' });
+                throw error;
             }
 
             currentPlan = [];
@@ -376,21 +545,15 @@ document.addEventListener('DOMContentLoaded', function() {
 
                     try {
                         const mainCourse = getRandomMainCourse();
-                        const side = getRandomSide(mainCourse ? mainCourse.type : null); // Передаємо тип лише якщо mainCourse існує
+                        const side = getRandomSide(mainCourse ? mainCourse.type : null);
                         const vegetable = getRandomVegetable();
                         const addition = getRandomAddition();
 
                         if (!mainCourse || !side || !vegetable || !addition) {
-                            customLogger('warn', "Не вдалося знайти достатньо унікальних компонентів для прийому їжі.", null, {
-                                code: 'RAZION_WARN_004',
-                                mealNumber: meal,
-                                dayNumber: day,
-                                foundMain: !!mainCourse,
-                                foundSide: !!side,
-                                foundVegetable: !!vegetable,
-                                foundAddition: !!addition
+                            customLogger('warn', 'RAZION_WARN_004', null, {
+                                mealNumber: meal, dayNumber: day,
+                                foundMain: !!mainCourse, foundSide: !!side, foundVegetable: !!vegetable, foundAddition: !!addition
                             });
-                            // Пропускаємо цей прийом їжі або робимо його неповним
                             continue;
                         }
 
@@ -403,13 +566,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
                         const isValidMeal = mealComponents.every(comp =>
                             !isNaN(comp.calories) && !isNaN(comp.weight) && comp.weight >= 0
-                        ); // weight >= 0, тому що може бути 0г для добавок з 0 кал
+                        );
 
                         if (!isValidMeal) {
-                            customLogger('error', "Помилка розрахунку компонентів страви.", null, {
-                                code: 'RAZION_ERR_002',
-                                mealNumber: meal,
-                                dayNumber: day,
+                            customLogger('error', 'RAZION_ERR_002', null, {
+                                mealNumber: meal, dayNumber: day,
                                 components: mealComponents.map(c => ({ name: c.name, cal: c.calories, weight: c.weight }))
                             });
                             continue;
@@ -421,13 +582,13 @@ document.addEventListener('DOMContentLoaded', function() {
                         if (Math.abs(difference) > 10) {
                             const main = mealComponents[0];
                             if (main.weight === 0 || isNaN(main.calories / main.weight) || main.calories === 0) {
-                                customLogger('warn', "Некоректні дані для головної страви при коригуванні ваги. Пропуск коригування.", null, { code: 'RAZION_WARN_005', mainItem: main });
+                                customLogger('warn', 'RAZION_ADJUST_WARN_002', null, { mainItem: main });
                             } else {
                                 const caloriesPerGram = main.calories / main.weight;
                                 const adjustment = difference / caloriesPerGram;
 
                                 main.weight = Math.max(50, Math.round(main.weight + adjustment));
-                                main.calories = Math.round((main.weight * main.caloriesPer100g) / 100); // Corrected calculation
+                                main.calories = Math.round((main.weight * main.caloriesPer100g) / 100);
                                 main.protein = Math.round((main.weight * main.proteinPer100g) / 100 * 10) / 10;
                                 main.carbs = Math.round((main.weight * main.carbsPer100g) / 100 * 10) / 10;
                                 main.fat = Math.round((main.weight * main.fatPer100g) / 100 * 10) / 10;
@@ -445,14 +606,12 @@ document.addEventListener('DOMContentLoaded', function() {
                         if (side) usedMeals.add(side.name);
 
                     } catch (e) {
-                        customLogger('error', "Помилка генерації окремого прийому їжі.", e, { code: 'RAZION_ERR_003', mealNumber: meal, dayNumber: day });
+                        customLogger('error', 'RAZION_ERR_003', e, { mealNumber: meal, dayNumber: day });
                     }
                 }
 
                 dayPlans.push({
-                    day,
-                    meals: dayMeals,
-                    totalCalories: Math.round(dayCalories)
+                    day, meals: dayMeals, totalCalories: Math.round(dayCalories)
                 });
                 totalDaysCalories += dayCalories;
             }
@@ -460,11 +619,11 @@ document.addEventListener('DOMContentLoaded', function() {
             const totalTargetCalories = calories * days;
             const totalDifference = totalTargetCalories - totalDaysCalories;
 
-            if (Math.abs(totalDifference) > 50 && totalDaysCalories > 0) { // Перевірка, щоб уникнути ділення на нуль
+            if (Math.abs(totalDifference) > 50 && totalDaysCalories > 0) {
                 currentPlan = adjustTotalCalories(dayPlans, totalTargetCalories, totalDaysCalories);
-                customLogger('info', "Загальна калорійність скоригована.", null, { code: 'RAZION_INFO_001', target: totalTargetCalories, actual: totalDaysCalories });
+                customLogger('info', 'RAZION_INFO_004_ADJUSTED', null, { target: totalTargetCalories, actual: totalDaysCalories });
             } else if (totalDaysCalories === 0) {
-                customLogger('warn', "Загальна калорійність дорівнює нулю, коригування неможливе.", null, { code: 'RAZION_WARN_006' });
+                customLogger('warn', 'RAZION_ADJUST_WARN_001');
             }
 
 
@@ -472,49 +631,22 @@ document.addEventListener('DOMContentLoaded', function() {
             if (modal) {
                 modal.style.display = "block";
             }
-            customLogger('info', "План харчування успішно згенеровано.", null, { code: 'RAZION_INFO_002' });
+            customLogger('info', 'RAZION_INFO_005_GENERATED');
 
         } catch (error) {
-            customLogger('error', "Виникла несподівана помилка в генераторі раціону.", error, { code: 'RAZION_UNEXPECTED_ERR' });
-            alert(`Виникла помилка при генерації раціону: ${error.message}. Будь ласка, спробуйте ще раз або зверніться до адміністратора.`);
-            if (modal) {
-                modal.style.display = "none";
-            }
+            customLogger('error', 'GENERIC_ERROR', error); // Загальна помилка для непередбачених випадків
         }
     }
 
     function calculateComponent(item, targetCalories, type) {
         if (!item || isNaN(item.caloriesPer100g) || item.caloriesPer100g <= 0) {
-            customLogger('warn', `Некоректні дані для компонента: ${item ? item.name : 'Невідомо'}.`, null, { code: 'RAZION_COMP_WARN_001', item: item });
-            return {
-                name: item ? item.name : "Невідомо",
-                type: type,
-                weight: 0,
-                calories: 0,
-                proteinPer100g: 0,
-                carbsPer100g: 0,
-                fatPer100g: 0,
-                protein: 0,
-                carbs: 0,
-                fat: 0
-            };
+            customLogger('warn', 'RAZION_COMP_WARN_001', null, { item: item });
+            return { name: item ? item.name : "Невідомо", type: type, weight: 0, calories: 0, proteinPer100g: 0, carbsPer100g: 0, fatPer100g: 0, protein: 0, carbs: 0, fat: 0 };
         }
         const weight = Math.round((targetCalories * 100) / item.caloriesPer100g);
-        // Перевірка на від'ємну вагу, якщо раптом targetCalories надто низькі або item.caloriesPer100g надто високі
         if (isNaN(weight) || weight < 0) {
-            customLogger('warn', `Розрахована вага компонента є некоректною (${weight}г). Встановлено 0г.`, null, { code: 'RAZION_COMP_WARN_002', item: item, targetCalories, calculatedWeight: weight });
-            return {
-                name: item.name,
-                type: type === 'main' ? (item.type === 'fish' ? 'fish' : 'meat') : type,
-                weight: 0,
-                calories: 0,
-                proteinPer100g: item.proteinPer100g,
-                carbsPer100g: item.carbsPer100g,
-                fatPer100g: item.fatPer100g,
-                protein: 0,
-                carbs: 0,
-                fat: 0
-            };
+            customLogger('warn', 'RAZION_COMP_WARN_002', null, { item: item, targetCalories, calculatedWeight: weight });
+            return { name: item.name, type: type === 'main' ? (item.type === 'fish' ? 'fish' : 'meat') : type, weight: 0, calories: 0, proteinPer100g: item.proteinPer100g, carbsPer100g: item.carbsPer100g, fatPer100g: item.fatPer100g, protein: 0, carbs: 0, fat: 0 };
         }
 
         return {
@@ -533,7 +665,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function adjustTotalCalories(dayPlans, targetCalories, currentCalories) {
         if (currentCalories === 0) {
-            customLogger('warn', "Поточна сума калорій для коригування дорівнює нулю. Коригування неможливе.", null, { code: 'RAZION_ADJUST_WARN_001' });
+            customLogger('warn', 'RAZION_ADJUST_WARN_001');
             return dayPlans;
         }
         const factor = targetCalories / currentCalories;
@@ -544,9 +676,9 @@ document.addEventListener('DOMContentLoaded', function() {
                     let newWeight;
                     if (comp.calories === 0 || comp.weight === 0 || isNaN(comp.calories / comp.weight)) {
                         newWeight = comp.weight;
-                        customLogger('warn', "Некоректні дані компонента для коригування ваги. Збережена поточна вага.", null, { code: 'RAZION_ADJUST_WARN_002', component: comp });
+                        customLogger('warn', 'RAZION_ADJUST_WARN_002', null, { component: comp });
                     } else {
-                        newWeight = Math.max(0, Math.round((newCalories * comp.weight) / comp.calories)); // Ensure non-negative weight
+                        newWeight = Math.max(0, Math.round((newCalories * comp.weight) / comp.calories));
                     }
 
                     return {
@@ -560,15 +692,13 @@ document.addEventListener('DOMContentLoaded', function() {
                 });
 
                 return {
-                    ...meal,
-                    components: adjustedComponents,
+                    ...meal, components: adjustedComponents,
                     totalCalories: adjustedComponents.reduce((sum, c) => sum + c.calories, 0)
                 };
             });
 
             return {
-                ...day,
-                meals: adjustedMeals,
+                ...day, meals: adjustedMeals,
                 totalCalories: adjustedMeals.reduce((sum, m) => sum + m.totalCalories, 0)
             };
         });
@@ -576,24 +706,22 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function regenerateMealPlan() {
         if (currentPlan.length === 0) {
-            alert("Спочатку згенеруйте план харчування, натиснувши 'START'.");
-            customLogger('warn', "Спроба регенерації плану без існуючого плану.", null, { code: 'RAZION_WARN_005' });
+            customLogger('warn', 'RAZION_WARN_005');
             return;
         }
-        customLogger('info', "Регенерація плану харчування.");
+        customLogger('info', 'RAZION_INFO_006_REGENERATE');
         generateMealPlan();
     }
 
-    // Функції для вибору страв
     function getRandomMainCourse() {
         if (!recipes || !recipes.mainCourses || recipes.mainCourses.length === 0) {
-            customLogger('error', "Відсутні дані про основні страви (recipes.mainCourses).", null, { code: 'RECIPE_ERR_001' });
+            customLogger('error', 'RECIPE_ERR_001');
             return null;
         }
         const available = recipes.mainCourses.filter(m => !usedMeals.has(m.name));
         const pool = available.length > 0 ? available : recipes.mainCourses;
         if (pool.length === 0) {
-            customLogger('warn', "Немає доступних основних страв для вибору (пул порожній).", null, { code: 'RECIPE_WARN_001' });
+            customLogger('warn', 'RECIPE_WARN_001');
             return null;
         }
         return pool[Math.floor(Math.random() * pool.length)];
@@ -601,16 +729,13 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function getRandomSide(mainType) {
         if (!recipes || !recipes.sides || recipes.sides.length === 0) {
-            customLogger('error', "Відсутні дані про гарніри (recipes.sides).", null, { code: 'RECIPE_ERR_002' });
+            customLogger('error', 'RECIPE_ERR_002');
             return null;
         }
-        const available = recipes.sides.filter(s =>
-            s.pairsWith.includes(mainType) && !usedMeals.has(s.name)
-        );
-        const pool = available.length > 0 ? available :
-            recipes.sides.filter(s => s.pairsWith.includes(mainType));
+        const available = recipes.sides.filter(s => s.pairsWith.includes(mainType) && !usedMeals.has(s.name));
+        const pool = available.length > 0 ? available : recipes.sides.filter(s => s.pairsWith.includes(mainType));
         if (pool.length === 0) {
-            customLogger('warn', "Немає доступних гарнірів для вибору (пул порожній або немає відповідних для типу).", null, { code: 'RECIPE_WARN_002', mainType: mainType });
+            customLogger('warn', 'RECIPE_WARN_002', null, { mainType: mainType });
             return null;
         }
         return pool[Math.floor(Math.random() * pool.length)];
@@ -618,13 +743,13 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function getRandomVegetable() {
         if (!recipes || !recipes.vegetables || recipes.vegetables.length === 0) {
-            customLogger('error', "Відсутні дані про овочі (recipes.vegetables).", null, { code: 'RECIPE_ERR_003' });
+            customLogger('error', 'RECIPE_ERR_003');
             return null;
         }
         const available = recipes.vegetables.filter(v => !usedMeals.has(v.name));
         const pool = available.length > 0 ? available : recipes.vegetables;
         if (pool.length === 0) {
-            customLogger('warn', "Немає доступних овочів для вибору (пул порожній).", null, { code: 'RECIPE_WARN_003' });
+            customLogger('warn', 'RECIPE_WARN_003');
             return null;
         }
         return pool[Math.floor(Math.random() * pool.length)];
@@ -632,7 +757,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function getRandomAddition() {
         if (!recipes || !recipes.additions || recipes.additions.length === 0) {
-            customLogger('error', "Відсутні дані про добавки (recipes.additions).", null, { code: 'RECIPE_ERR_004' });
+            customLogger('error', 'RECIPE_ERR_004');
             return null;
         }
         return recipes.additions[Math.floor(Math.random() * recipes.additions.length)];
@@ -641,7 +766,7 @@ document.addEventListener('DOMContentLoaded', function() {
     function displayMealPlan() {
         const mealPlanResultElement = document.getElementById("meal-plan-result");
         if (!mealPlanResultElement) {
-            customLogger('error', "Елемент 'meal-plan-result' не знайдено для відображення плану.", null, { code: 'DOM_ERR_003', elementId: 'meal-plan-result' });
+            customLogger('error', 'DOM_ERR_003', null, { elementId: 'meal-plan-result' });
             return;
         }
 
@@ -649,16 +774,9 @@ document.addEventListener('DOMContentLoaded', function() {
         if (currentPlan.length === 0) {
             html = "<p>План харчування не згенеровано або сталася помилка.</p>";
             mealPlanResultElement.innerHTML = html;
-            customLogger('warn', "Спроба відобразити порожній план харчування.", null, { code: 'RAZION_DISPLAY_WARN_001' });
+            customLogger('warn', 'RAZION_DISPLAY_WARN_001');
             return;
         }
-
-        const caloriesInput = document.getElementById("calories");
-        const daysInput = document.getElementById("days");
-        const targetCaloriesVal = caloriesInput ? parseInt(caloriesInput.value) : 2000;
-        const daysVal = daysInput ? parseInt(daysInput.value) : 1;
-        // const totalTargetCalories = targetCaloriesVal * daysVal; // Ця змінна більше не використовується для відображення загальної статистики
-
 
         currentPlan.forEach(dayPlan => {
             html += `<div class="meal-day"><h3>День ${dayPlan.day} (${dayPlan.totalCalories} ккал)</h3>`;
@@ -669,7 +787,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         <strong>Прийом їжі ${index + 1}: ${meal.totalCalories} ккал</strong>
                         ${meal.components.map(comp => {
                     if (!comp || isNaN(comp.weight) || isNaN(comp.calories) || isNaN(comp.protein) || isNaN(comp.carbs) || isNaN(comp.fat)) {
-                        customLogger('warn', "Некоректні дані компонента для відображення.", null, { code: 'RAZION_DISPLAY_WARN_002', componentData: comp });
+                        customLogger('warn', 'RAZION_DISPLAY_WARN_002', null, { componentData: comp });
                         return `<div>Помилка завантаження компонента.</div>`;
                     }
                     return `
@@ -688,17 +806,13 @@ document.addEventListener('DOMContentLoaded', function() {
         });
 
         mealPlanResultElement.innerHTML = html;
-        customLogger('info', "План харчування успішно відображено.", null, { code: 'RAZION_DISPLAY_INFO_001', daysDisplayed: currentPlan.length });
+        customLogger('info', 'RAZION_DISPLAY_INFO_001', null, { daysDisplayed: currentPlan.length });
     }
 
     function getComponentName(type) {
         const names = {
-            'meat': 'М\'ясо',
-            'poultry': 'Пташина',
-            'fish': 'Риба',
-            'side': 'Гарнір',
-            'vegetable': 'Овочі',
-            'addition': 'Добавка',
+            'meat': 'М\'ясо', 'poultry': 'Пташина', 'fish': 'Риба', 'side': 'Гарнір',
+            'vegetable': 'Овочі', 'addition': 'Добавка',
         };
         return names[type] || type;
     }
